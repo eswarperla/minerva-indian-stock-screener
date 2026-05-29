@@ -1,0 +1,96 @@
+{
+  "_comment": "Configuration for the SEPA-VCP screener - INDIA (NSE) edition. Copy to config.json and tweak. config.json is gitignored (user-local); this example is the committed default. ALL strategy settings live here - the Python code reads every threshold from this file. Monetary thresholds are in INR.",
+
+  "market": {
+    "currency": "INR",
+    "benchmark_ticker": "^CRSLDX",
+    "benchmark_fallback": "^NSEI",
+    "benchmark_label": "NIFTY"
+  },
+
+  "universe": {
+    "tickers_file": "tickers_india.txt",
+    "_comment_caps": "INR thresholds. 2000 cr market cap (~USD 240M) and 5 cr/day traded value are sensible liquidity floors for Nifty 500 names.",
+    "min_market_cap_inr": 20000000000,
+    "min_avg_turnover_inr": 50000000
+  },
+
+  "yfinance": {
+    "batch_size": 25,
+    "inter_batch_sleep_seconds": 1.5,
+    "price_lookback_days": 400
+  },
+
+  "caching": {
+    "fundamentals_ttl_days": 7
+  },
+
+  "sepa_trend_template": {
+    "_comment": "Minervini's 8-point trend template. DMA periods (50/150/200) are the canonical definition - change only if you know why.",
+    "rs_rank_min": 70,
+    "within_high_pct": 0.15,
+    "above_low_min": 1.25,
+    "within_52w_high_pct": 0.25,
+    "recent_high_lookback_days": 130,
+    "dma_fast": 50,
+    "dma_mid": 150,
+    "dma_slow": 200,
+    "dma_slope_lookback_days": 22
+  },
+
+  "relative_strength": {
+    "_comment": "RS percentile inputs. lookback_days are trading days (~3/6/9/12 months); weights must align 1:1 and sum to 1.0.",
+    "lookback_days": [63, 126, 189, 252],
+    "weights": [0.4, 0.2, 0.2, 0.2]
+  },
+
+  "sepa_fundamentals": {
+    "_comment": "provider: yfinance | screener_in | yfinance_then_screener. strict_gate=false means a MISSING fundamental is skipped rather than failing the stock (recommended for India where data is patchy).",
+    "provider": "yfinance_then_screener",
+    "strict_gate": false,
+    "eps_q_growth_min": 0.25,
+    "sales_q_growth_min": 0.20,
+    "eps_annual_growth_min": 0.25,
+    "roe_min": 0.15,
+    "earnings_flag_days": 5
+  },
+
+  "vcp_detection": {
+    "base_min_weeks": 3,
+    "base_max_weeks": 10,
+    "min_contractions": 2,
+    "tightening_factor": 0.8,
+    "last_contraction_max": 0.15,
+    "vol_dryup_max": 0.70,
+    "contraction_min_distance": 5,
+    "contraction_min_depth": 0.015
+  },
+
+  "buckets": {
+    "at_pivot_within_pct": 0.03,
+    "breakout_within_pct": 0.05,
+    "breakout_vol_mult": 1.4,
+    "breakout_lookback_days": 3,
+    "at_pivot_vol_dryup_max": 0.8
+  },
+
+  "scoring": {
+    "_comment": "SEPA composite score weights (each block should sum to ~1.0). 'weights' for A/B/C, 'early_weights' for bucket E (no VCP yet), 'fundamental_norm' = growth/ROE value that scores full marks.",
+    "weights": {"rs": 0.30, "trend": 0.20, "vcp": 0.30, "distance": 0.10, "fundamentals": 0.10},
+    "early_weights": {"rs": 0.40, "trend": 0.20, "distance": 0.10, "fundamentals": 0.30},
+    "fundamental_norm": {"eps_q": 0.50, "sales_q": 0.40, "eps_annual": 0.50, "roe": 0.35}
+  },
+
+  "market_health": {
+    "_comment": "Benchmark health signals shown on the dashboard. distribution_day_pct is the down-day threshold (e.g. -0.002 = -0.2%) on higher volume; fail-rate bands flip the breakout-failure light amber/red.",
+    "distribution_day_pct": -0.002,
+    "distribution_window_days": 26,
+    "fail_rate_amber": 0.25,
+    "fail_rate_red": 0.40
+  },
+
+  "risk": {
+    "_comment": "max_loss_pct caps how far the stop sits below the pivot. Per Minervini, never risk more than ~7-8%.",
+    "max_loss_pct": 0.08
+  }
+}

@@ -1,0 +1,16 @@
+# User-local config and generated data
+config.json
+sepa_data_india_latest.json
+sepa_vcp_india_watchlist.html
+fundamentals_cache.json
+prices_cache/
+*.log
+
+# macOS launchd runtime logs
+screener_launchd.log
+screener_launchd.err.log
+
+# Python
+venv/
+__pycache__/
+*.pyc

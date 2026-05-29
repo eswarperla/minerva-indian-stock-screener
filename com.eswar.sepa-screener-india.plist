@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Unique name for this job -->
+    <key>Label</key>
+    <string>com.eswar.sepa-screener-india</string>
+
+    <!-- What to run: bash executes the India launcher (screener + dashboard render) -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/eswarparla/Claude/minervini-stock-screener-india/run_screener_india.sh</string>
+    </array>
+
+    <!-- Run from the project folder so relative paths (venv, JSON) resolve -->
+    <key>WorkingDirectory</key>
+    <string>/Users/eswarparla/Claude/minervini-stock-screener-india</string>
+
+    <!-- launchd starts with almost no PATH; cover Homebrew (Apple Silicon + Intel) and system python -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+
+    <!-- WHEN to run: every weekday (Mon-Fri) at 18:00 local time.
+         NSE closes 15:30 IST, so 6 PM leaves a comfortable buffer.
+         If the Mac is asleep/off at 18:00, launchd runs it as soon as it wakes.
+         To run all 7 days instead, delete the Weekday key below. -->
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>18</integer><key>Minute</key><integer>0</integer></dict>
+    </array>
+
+    <!-- Don't run the moment it's loaded; wait for the scheduled time -->
+    <key>RunAtLoad</key>
+    <false/>
+
+    <!-- Capture output for troubleshooting -->
+    <key>StandardOutPath</key>
+    <string>/Users/eswarparla/Claude/minervini-stock-screener-india/screener_launchd.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/eswarparla/Claude/minervini-stock-screener-india/screener_launchd.err.log</string>
+</dict>
+</plist>
